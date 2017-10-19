@@ -28,7 +28,7 @@ std::vector<std::vector<string>> inputToArray(string input) {
 }
 
 int bitCount(string binary) {
-	for (int i : binary.length()) {
+	for (int i = 0; i < binary.length(); i++) {
 
 	}
 }
