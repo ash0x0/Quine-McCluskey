@@ -7,7 +7,29 @@
 
 using namespace std;
 
-std::vector<int> inputToArray(string input) {
+void pad(std::vector<int> &terms) {
+	if (terms.size() < 16) {
+		terms.insert(terms.begin(), 0);
+	}
+}
+
+std::vector<std::vector<int> > arrayToBCD(std::vector<int> terms) {
+	std::vector<int> binary;
+	std::vector<std::vector<int> > allterms;
+	int number;
+	int remainder;
+	for (int i = 0; i < terms.size(); i++) {
+		number = terms.at(i);
+		while (number != 0) {
+			binary.push_back(number % 2);
+			number = number / 2;
+		}
+		allterms.push_back(binary);
+	}
+	return allterms;
+}
+
+std::vector<std::vector<int> > inputToArray(string input) {
 	std::vector<string> terms;
 	std::vector<int> minterms;
 	int firstComma = input.find(',');
@@ -22,17 +44,27 @@ std::vector<int> inputToArray(string input) {
 	int lastComma = input.find_last_of(',');
 	terms.push_back(input.substr(lastComma + 1));
 	for (int i = 0; i < terms.size(); i++) {
-		cout << terms.at(i) << endl;
 		if (std::stoi(terms.at(i)))
 			minterms.push_back(std::stoi(terms.at(i)));
 	}
-	return minterms;
+	std::vector<std::vector<int> > allterms = arrayToBCD(minterms);
+	return allterms;
 }
 
-int bitCount(string binary) {
-	for (int i = 0; i < binary.length(); i++) {
-
+std::vector<int> countBits(std::vector<std::vector<int> > terms) {
+	std::vector<int> binary;
+	std::vector<int> number(terms.size(), 0);
+	for (int i = 0; i < terms.size(); i++) {
+		binary = terms.at(i);
+		for (int j = 0; j < binary.size(); j++) {
+//			cout << terms.at(i).at(j);
+			if (binary.at(j) == 1) {
+				number.at(i) += 1;
+			}
+		}
+//		cout << endl;
 	}
+	return number;
 }
 
 bool malformedInput(string input) {
@@ -50,11 +82,16 @@ bool malformedInput(string input) {
 	return false;
 }
 
+
 int main(int argc, const char *argv[]) {
 	string mintermsInput;
 	string dontCaresInput;
-	std::vector<int> minterms;
-	std::vector<int> dontcares;
+	int variableNumber;
+	string variableCount;
+	std::vector<std::vector<int> > minterms;
+	std::vector<int> mintermsBits;
+	std::vector<std::vector<int> > dontcares;
+	std::vector<int> dontcaresBits;
 
 	if (argc > 1) {
 		// The program is being executed with input files
@@ -62,7 +99,11 @@ int main(int argc, const char *argv[]) {
 		std::string line;
 		ifstream inputFile(argv[1]);
 		for (int i = 0; i < 2; i++) {
-			if (i == 0)
+			if (i == 0) {
+				getline(inputFile, variableCount);
+				variableNumber = stoi(variableCount);
+			}
+			if (i == 1)
 				getline(inputFile, mintermsInput);
 			if (i == 1)
 				getline(inputFile, dontCaresInput);
@@ -73,7 +114,16 @@ int main(int argc, const char *argv[]) {
 		do {
 			if (counter > 0)
 				cout << "Wrong Input!" << endl;
-			cout << "Please enter minterms comma seperated: ";
+			cout << "Please enter number of variables [1-16]: ";
+			getline(std::cin, variableCount);
+			variableNumber = stoi(variableCount);
+			counter += 1;
+		} while (malformedInput(mintermsInput) || mintermsInput.empty());
+		counter = 0;
+		do {
+			if (counter > 0)
+				cout << "Wrong Input!" << endl;
+			cout << "Please enter minterms as numbers comma seperated: ";
 			getline(std::cin, mintermsInput);
 			counter += 1;
 		} while (malformedInput(mintermsInput));
@@ -81,7 +131,7 @@ int main(int argc, const char *argv[]) {
 		do {
 			if (counter > 0)
 				cout << "Wrong Input!" << endl;
-			cout << "Please enter don't cares comma seperated: ";
+		cout << "Please enter don't cares as numbers comma seperated: ";
 			getline(std::cin, dontCaresInput);
 			counter += 1;
 		} while (malformedInput(dontCaresInput));
@@ -94,10 +144,11 @@ int main(int argc, const char *argv[]) {
 	}
 
 	minterms = inputToArray(mintermsInput);
+	if (!dontCaresInput.empty())
 	dontcares = inputToArray(dontCaresInput);
+	mintermsBits = countBits(minterms);
+	if (!dontCaresInput.empty())
+	dontcaresBits = countBits(dontcares);
 
 	return 0;
 }
-
-
-
