@@ -1,10 +1,3 @@
-/*
- * quine.mccluskey.cpp
- *
- *  Created on: Oct 19, 2017
- *      Author: ahmed
- */
-
 #include <iostream>
 #include <cstdio>
 #include <fstream>
@@ -14,17 +7,26 @@
 
 using namespace std;
 
-std::vector<std::vector<string>> inputToArray(string input) {
-	std::vector<std::vector<char>> terms;
-	std::vector<char> singleTerm;
-	for (int j = 0; j < input.length; j++) {
-
-		for (int i = 0; i < input.length(); i++) {
-			singleTerm.push_back(input[i]);
-		}
-		terms.push_back[singleTerm];
+std::vector<int> inputToArray(string input) {
+	std::vector<string> terms;
+	std::vector<int> minterms;
+	int firstComma = input.find(',');
+	terms.push_back(input.substr(0, firstComma));
+	int comma = firstComma;
+	int next = 0;
+	for (; comma < input.length() - 2;) {
+		next = input.find(',', comma + 1);
+		terms.push_back(input.substr(comma + 1, next - comma - 1));
+		comma = next;
 	}
-	return terms;
+	int lastComma = input.find_last_of(',');
+	terms.push_back(input.substr(lastComma + 1));
+	for (int i = 0; i < terms.size(); i++) {
+		cout << terms.at(i) << endl;
+		if (std::stoi(terms.at(i)))
+			minterms.push_back(std::stoi(terms.at(i)));
+	}
+	return minterms;
 }
 
 int bitCount(string binary) {
@@ -33,26 +35,14 @@ int bitCount(string binary) {
 	}
 }
 
-bool wrongInput(string input) {
-	bool answer;
-
-	return answer;
-}
-
-char[] binaryCodedDecimal(string input) {
-	char[] binaryCode;
-
-
-
-	return binaryCode;
-}
-
 bool malformedInput(string input) {
 	// Check if input contains other than digit/space/comma
 	char currentCharacter;
 	for (int i = 0; i < input.length(); i++) {
 		currentCharacter = input[i];
-		if (i == 32 || i == 44 || (i <= 57 && i >= 48))
+		if (currentCharacter == ' ' || currentCharacter == ','
+				|| currentCharacter == '\n'
+				|| (currentCharacter <= 57 && currentCharacter >= 48))
 			continue;
 		else
 			return true;
@@ -63,7 +53,8 @@ bool malformedInput(string input) {
 int main(int argc, const char *argv[]) {
 	string mintermsInput;
 	string dontCaresInput;
-	std::vector<char> v;
+	std::vector<int> minterms;
+	std::vector<int> dontcares;
 
 	if (argc > 1) {
 		// The program is being executed with input files
@@ -85,7 +76,7 @@ int main(int argc, const char *argv[]) {
 			cout << "Please enter minterms comma seperated: ";
 			getline(std::cin, mintermsInput);
 			counter += 1;
-		} while (wrongInput(mintermsInput));
+		} while (malformedInput(mintermsInput));
 		counter = 0;
 		do {
 			if (counter > 0)
@@ -93,7 +84,7 @@ int main(int argc, const char *argv[]) {
 			cout << "Please enter don't cares comma seperated: ";
 			getline(std::cin, dontCaresInput);
 			counter += 1;
-		} while (wrongInput(dontCaresInput));
+		} while (malformedInput(dontCaresInput));
 	}
 
 	if (malformedInput(mintermsInput) || malformedInput(dontCaresInput)) {
@@ -102,9 +93,8 @@ int main(int argc, const char *argv[]) {
 		return 0;
 	}
 
-	binaryCodedDecimal();
-	countBits();
-	compareBinary();
+	minterms = inputToArray(mintermsInput);
+	dontcares = inputToArray(dontCaresInput);
 
 	return 0;
 }
