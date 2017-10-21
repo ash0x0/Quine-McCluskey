@@ -78,6 +78,22 @@ std::vector<int> countBits(std::vector<int> terms) {
 	return count;
 }
 
+void sort(std::vector<int> &terms, std::vector<int> &count,
+		int numberOfVariables) {
+	for (int i = 0; i <= numberOfVariables; i++) {
+		for (int j = 0; j < count.size(); j++) {
+			if (count.at(j) > count.at(j + 1)) {
+				int tmp1 = count.at(j);
+				int tmp2 = terms.at(j);
+				count.at(j) = count.at(j + 1);
+				terms.at(j) = terms.at(j + 1);
+				count.at(j + 1) = tmp1;
+				terms.at(j + 1) = tmp2;
+			}
+		}
+	}
+}
+
 bool malformedInput(string input) {
 	// Check if input contains other than digit/space/comma
 	char currentCharacter;
@@ -170,16 +186,16 @@ int main(int argc, const char *argv[]) {
 		cout << "Function is always one" << endl;
 		return 0;
 	}
-	if (dontcares.size != 0) {
+	if (dontcares.size() != 0) {
 		minterms.insert(minterms.end(), dontcares.begin(), dontcares.end());
 		mintermsBits.insert(mintermsBits.end(), dontcaresBits.begin(),
 				dontcaresBits.end());
 
 	}
+	sort(minterms, mintermsBits, variableNumber);
 
 	for (int i = 0; i < minterms.size(); i++) {
 		cout << minterms.at(i) << " " << mintermsBits.at(i) << endl;
 	}
-
 	return 0;
 }
