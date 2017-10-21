@@ -8,28 +8,38 @@
 using namespace std;
 
 void pad(std::vector<int> &terms) {
-	if (terms.size() < 16) {
-		terms.insert(terms.begin(), 0);
+	string number = "";
+	for (int i : terms) {
+		number = to_string(terms.at(i));
+		if (number.length() < 16) {
+			for (int i = number.length(); i < 16; i++)
+				number = "0" + number;
+		}
+		terms.at(i) = stoi(number);
 	}
 }
 
-std::vector<std::vector<int> > arrayToBCD(std::vector<int> terms) {
-	std::vector<int> binary;
-	std::vector<std::vector<int> > allterms;
-	int number;
+void arrayToBCD(std::vector<int> &terms) {
+	int number = 0;
 	int remainder;
+	int multiplier;
+	int binary;
 	for (int i = 0; i < terms.size(); i++) {
 		number = terms.at(i);
-		while (number != 0) {
-			binary.push_back(number % 2);
+		binary = 0;
+		remainder = 0;
+		multiplier = 1;
+		do {
+			remainder = number % 2;
+			binary = binary + (multiplier * remainder);
 			number = number / 2;
-		}
-		allterms.push_back(binary);
+			multiplier = multiplier * 10;
+		} while (number > 0);
+		terms.at(i) = binary;
 	}
-	return allterms;
 }
 
-std::vector<std::vector<int> > inputToArray(string input) {
+std::vector<int> inputToArray(string input) {
 	std::vector<string> terms;
 	std::vector<int> minterms;
 	int firstComma = input.find(',');
@@ -47,24 +57,24 @@ std::vector<std::vector<int> > inputToArray(string input) {
 		if (std::stoi(terms.at(i)))
 			minterms.push_back(std::stoi(terms.at(i)));
 	}
-	std::vector<std::vector<int> > allterms = arrayToBCD(minterms);
-	return allterms;
+	arrayToBCD(minterms);
+	return minterms;
 }
 
-std::vector<int> countBits(std::vector<std::vector<int> > terms) {
-	std::vector<int> binary;
-	std::vector<int> number(terms.size(), 0);
+std::vector<int> countBits(std::vector<int> terms) {
+	string number = "";
+	int counter;
+	std::vector<int> count;
 	for (int i = 0; i < terms.size(); i++) {
-		binary = terms.at(i);
-		for (int j = 0; j < binary.size(); j++) {
-//			cout << terms.at(i).at(j);
-			if (binary.at(j) == 1) {
-				number.at(i) += 1;
-			}
+		counter = 0;
+		number = to_string(terms.at(i));
+		for (int j = 0; j < number.length(); j++) {
+			if (number[j] == '1')
+				counter += 1;
 		}
-//		cout << endl;
+		count.push_back(counter);
 	}
-	return number;
+	return count;
 }
 
 bool malformedInput(string input) {
@@ -88,9 +98,9 @@ int main(int argc, const char *argv[]) {
 	string dontCaresInput;
 	int variableNumber;
 	string variableCount;
-	std::vector<std::vector<int> > minterms;
+	std::vector<int> minterms;
 	std::vector<int> mintermsBits;
-	std::vector<std::vector<int> > dontcares;
+	std::vector<int> dontcares;
 	std::vector<int> dontcaresBits;
 
 	if (argc > 1) {
@@ -118,7 +128,7 @@ int main(int argc, const char *argv[]) {
 			getline(std::cin, variableCount);
 			variableNumber = stoi(variableCount);
 			counter += 1;
-		} while (malformedInput(mintermsInput) || mintermsInput.empty());
+		} while (malformedInput(variableCount) || variableCount.empty());
 		counter = 0;
 		do {
 			if (counter > 0)
@@ -149,6 +159,10 @@ int main(int argc, const char *argv[]) {
 	mintermsBits = countBits(minterms);
 	if (!dontCaresInput.empty())
 	dontcaresBits = countBits(dontcares);
+
+	for (int i = 0; i < minterms.size(); i++) {
+		cout << minterms.at(i) << " " << mintermsBits.at(i) << endl;
+	}
 
 	return 0;
 }
