@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -159,6 +160,22 @@ int main(int argc, const char *argv[]) {
 	mintermsBits = countBits(minterms);
 	if (!dontCaresInput.empty())
 	dontcaresBits = countBits(dontcares);
+
+	if (minterms.size() == 0) {
+		cout << "Function is always zero" << endl;
+		return 0;
+	}
+
+	if ((minterms.size() + dontcares.size()) == pow(2, variableNumber)) {
+		cout << "Function is always one" << endl;
+		return 0;
+	}
+	if (dontcares.size != 0) {
+		minterms.insert(minterms.end(), dontcares.begin(), dontcares.end());
+		mintermsBits.insert(mintermsBits.end(), dontcaresBits.begin(),
+				dontcaresBits.end());
+
+	}
 
 	for (int i = 0; i < minterms.size(); i++) {
 		cout << minterms.at(i) << " " << mintermsBits.at(i) << endl;
