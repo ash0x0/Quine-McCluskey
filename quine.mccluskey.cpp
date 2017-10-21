@@ -82,7 +82,7 @@ void sort(std::vector<int> &terms, std::vector<int> &count,
 		int numberOfVariables) {
 	for (int i = 0; i <= numberOfVariables; i++) {
 		for (int j = 0; j < count.size(); j++) {
-			if (count.at(j) > count.at(j + 1)) {
+			if (count.at(j - 1) < count.at(j)) {
 				int tmp1 = count.at(j);
 				int tmp2 = terms.at(j);
 				count.at(j) = count.at(j + 1);
